@@ -46,6 +46,23 @@ week_10_folds <- vfold_cv(week_10_train, v = 10)
 * Create a model which produces a lower RMSE on the training data. (Do not use the cross-validated data sets until the next Scene.) You may do anything you like! Our advice is to keep the same basic structure as `mod_1_wfl`, but to change the formula and to experiment with various `step_` functions. Call this workflow `mod_2_wfl`. Hints: `step_poly()` and `step_bs()` are fun to play with.
 
 
+```{r sc1}
+mod_1_wfl <- 
+  workflow() %>%
+  add_model(linear_reg() %>%
+              set_engine("lm") %>%
+              set_mode("regression")) %>%
+  add_recipe(recipe(reg_chg ~ treatment + poverty_n,
+                    data = week_10))
+  
+
+mod_1_wfl %>% fit(data = week_10_train) %>%
+  predict(new_data = week_10_train) %>%
+  bind_cols(week_10_train %>% select(reg_chg)) %>%
+  metrics(truth = reg_chg, estimate = `.pred`)
+
+
+```
  
 
 ## Scene 2
@@ -56,6 +73,22 @@ week_10_folds <- vfold_cv(week_10_train, v = 10)
 
 * Write a few sentences explaining why a model which worked so well on week_10_train worked so poorly on week_10_folds.
 
+```{r sc2}
+
+mod_1_wfl <- 
+  workflow() %>%
+  add_model(linear_reg() %>%
+              set_engine("lm") %>%
+              set_mode("regression")) %>%
+  add_recipe(recipe(reg_chg ~ treatment + poverty_n,
+                    data = week_10)) %>%
+  fit_resamples(resamples = week_10_folds, 
+                control = control_resamples(save_pred = TRUE))
+
+
+mod_1_wfl
+
+```
 
 
 ## Scene 3
@@ -67,4 +100,8 @@ week_10_folds <- vfold_cv(week_10_train, v = 10)
 * Provide the 95% confidence interval for this estimate.
 
 * Write a few sentences interpreting this confidence interval.
+
+```{r sc3}
+
+```
 
